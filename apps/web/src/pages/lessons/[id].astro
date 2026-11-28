@@ -11,6 +11,8 @@ import { starterLink } from '../../lessons/programs';
 import { localHref, m, pageLang } from '../../i18n';
 import { localLesson, localTitles } from '../../lessons/translations';
 import { getLessons, type LessonEntry } from '../../lessons/load';
+import { gradesLabel, phaseLabel } from '../../lessons/labels';
+import { missionKey } from '../../junior/missions';
 
 export async function getStaticPaths() {
   const lessons = await getLessons();
@@ -46,6 +48,10 @@ const starter = data.starter_program
   ? starterLink(lesson.id, data.starter_program, world, local.programName)
   : undefined;
 const withdrawnHere = isOff('lesson', lesson.id);
+// Junior lessons open their missions and print the picture mission sheets (spec junior.md FR-6).
+const missionName = (id: string) =>
+  (m as unknown as Record<string, () => string>)[missionKey(id)]?.() ?? id;
+const junior = data.phase === 0;
 ---
 
 <BaseLayout title={data.title}>
@@ -78,8 +84,8 @@ const withdrawnHere = isOff('lesson', lesson.id);
   <h1 lang={textLang}>{data.title}</h1>
 
   <ul class="facts">
-    <li>{m.lesson_phase({ phase: data.phase })}</li>
-    <li>{m.lesson_grades({ grades: data.grades.join('–') })}</li>
+    <li>{phaseLabel(data.phase)}</li>
+    <li>{gradesLabel(data.grades)}</li>
     <li>{m.lesson_duration({ minutes: data.duration_minutes })}</li>
     <li>{m.lesson_cost({ amount: data.cost_estimate_zar })}</li>
     <li>{m.lesson_mechanism({ mechanism: data.mechanism })}</li>
@@ -89,10 +95,36 @@ const withdrawnHere = isOff('lesson', lesson.id);
     <a class="button" href={localHref(`/lessons/${lesson.id}/slides/`)} data-offline>
       {m.lesson_slides_link()}
     </a>
-    <a class="button" href={localHref(`/lessons/${lesson.id}/answer-sheet/`)} data-offline>
-      {m.lesson_answer_sheet_link()}
-    </a>
+    {!junior && (
+      <a class="button" href={localHref(`/lessons/${lesson.id}/answer-sheet/`)} data-offline>
+        {m.lesson_answer_sheet_link()}
+      </a>
+    )}
   </p>
+
+  {junior && (
+    <section class="code-start" aria-labelledby="missions-title">
+      <h2 id="missions-title">{m.lesson_junior_missions_title()}</h2>
+      <p>{m.lesson_junior_missions_about()}</p>
+      <ul class="missions">
+        {data.junior_missions.map((id) => (
+          <li>
+            <a class="button" href={localHref(`/code/junior/#${id}`)}>
+              {m.lesson_junior_open({ mission: missionName(id) })}
+            </a>
+            <a href={localHref(`/code/junior/sheet/${id}/`)} data-offline>
+              {m.lesson_junior_sheet({ mission: missionName(id) })}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p>
+        <a href={localHref('/code/junior/cards/')} data-offline>
+          {m.lesson_junior_cards()}
+        </a>
+      </p>
+    </section>
+  )}
 
   <DownloadLesson />
 
@@ -275,6 +307,20 @@ const withdrawnHere = isOff('lesson', lesson.id);
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
     background: var(--color-surface);
+  }
+
+  .missions {
+    display: grid;
+    gap: var(--space-3);
+    padding: 0;
+    list-style: none;
+  }
+
+  .missions li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
   }
 
   .parts h2,

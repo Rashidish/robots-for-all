@@ -1,0 +1,16 @@
+{
+  "id": "rhino-count-steps",
+  "grid": {
+    "cols": 6,
+    "rows": 3
+  },
+  "start": {
+    "cell": "A2",
+    "heading": "E"
+  },
+  "target": "F2",
+  "obstacles": [],
+  "blocks": ["forward", "x2", "x3", "x4", "x5"],
+  "best": 2,
+  "theme": "rhino-water"
+}

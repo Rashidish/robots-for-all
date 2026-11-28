@@ -2,15 +2,26 @@
 import { z } from 'astro/zod';
 
 export const PRIMM_STEPS = ['Predict', 'Run', 'Investigate', 'Modify', 'Make'] as const;
+/** Junior lessons (Grades R–2, spec docs/specs/junior.md): PRIMM simplified to four steps. */
+export const JUNIOR_STEPS = ['Predict', 'Run', 'Try', 'Make'] as const;
+/** Phase 0 is Junior (Grades R–2); phases 1–3 are Build, Control, Integrate. */
+export const JUNIOR_PHASE = 0;
+/** The `##` steps a lesson of this phase has, in order. */
+export const stepsFor = (phase: number): readonly string[] =>
+  phase === JUNIOR_PHASE ? JUNIOR_STEPS : PRIMM_STEPS;
 
-const lessonId = z.string().regex(/^p[1-3]-[a-z]+-\d{2}$/, 'id must look like p1-crank-01');
+const lessonId = z
+  .string()
+  .regex(/^(p[1-3]|j)-[a-z]+-\d{2}$/, 'id must look like p1-crank-01 (Junior: j-route-01)');
 
 export const lessonSchema = z
   .object({
     id: lessonId,
     title: z.string().min(3).max(80),
-    phase: z.union([z.literal(1), z.literal(2), z.literal(3)]),
-    grades: z.array(z.number().int().min(1).max(12)).min(1),
+    /** 0 Junior (Grades R–2) | 1 Build | 2 Control | 3 Integrate */
+    phase: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]),
+    /** Grade R is 0 (shown as "R"). */
+    grades: z.array(z.number().int().min(0).max(12)).min(1),
     mechanism: z.string().min(2),
     syllabus_links: z
       .array(z.object({ subject: z.string().min(2), topic: z.string().min(2) }))
@@ -59,6 +70,10 @@ export const lessonSchema = z
       .regex(/^[a-z]+(-[a-z]+)*$/, 'world ids are file names in content/worlds without .json')
       .nullable()
       .default(null),
+    /** Junior: the missions the lesson opens, in content/junior (spec junior.md §9 step 3). */
+    junior_missions: z
+      .array(z.string().regex(/^[a-z]+(-[a-z]+)*$/, 'mission ids are file names in content/junior'))
+      .default([]),
     /** What a learner needs: every Phase 2 lesson also works on the on-screen micro:bit. */
     hardware: z.enum(['none', 'microbit', 'microbit-motor']).default('none'),
     status: z.enum(['draft', 'in_review', 'published']),
@@ -74,6 +89,22 @@ export const lessonSchema = z
   .refine((l) => l.status !== 'published' || l.build_tested_by !== null, {
     message: 'A published lesson needs build_tested_by (someone must build it from the lesson)',
     path: ['build_tested_by']
+  })
+  .refine((l) => (l.phase === JUNIOR_PHASE) === l.id.startsWith('j-'), {
+    message: 'Junior lessons (phase 0) have ids starting "j-", and only they do',
+    path: ['id']
+  })
+  .refine((l) => l.phase === JUNIOR_PHASE || !l.grades.includes(0), {
+    message: 'Grade R (0) is only for Junior lessons (phase 0)',
+    path: ['grades']
+  })
+  .refine((l) => l.phase !== JUNIOR_PHASE || l.grades.every((g) => g <= 2), {
+    message: 'Junior lessons are for Grades R to 2 (0, 1, 2)',
+    path: ['grades']
+  })
+  .refine((l) => (l.phase === JUNIOR_PHASE) === l.junior_missions.length > 0, {
+    message: 'Junior lessons name at least one mission in junior_missions, and only they do',
+    path: ['junior_missions']
   })
   .refine((l) => l.next !== l.id && !l.prerequisites.includes(l.id), {
     message: 'A lesson cannot link to itself',
@@ -137,19 +168,31 @@ export const translationSchema = z
 
 export type Translation = z.infer<typeof translationSchema>;
 
-/** Returns problems with the lesson body: the five PRIMM steps must be `##` headings, in order. */
-export function checkPrimm(body: string): string[] {
+/**
+ * Returns problems with the lesson body: the five PRIMM steps (Junior: Predict, Run, Try, Make)
+ * must be `##` headings, in order, and no other phase's steps may appear.
+ */
+export function checkPrimm(body: string, phase = 1): string[] {
+  const steps = stepsFor(phase);
+  const all = new Set<string>([...PRIMM_STEPS, ...JUNIOR_STEPS]);
   const headings = [...body.matchAll(/^##\s+(.+?)\s*$/gm)].map((m) => (m[1] ?? '').trim());
-  const found = headings.filter((h) => (PRIMM_STEPS as readonly string[]).includes(h));
+  const found = headings.filter((h) => all.has(h));
   const problems: string[] = [];
-  for (const step of PRIMM_STEPS) {
+  for (const step of steps) {
     if (!found.includes(step)) problems.push(`Missing "## ${step}" heading`);
   }
-  if (problems.length === 0 && found.join() !== PRIMM_STEPS.join()) {
-    problems.push(`PRIMM headings must be in order: ${PRIMM_STEPS.join(', ')}`);
+  for (const h of found) {
+    if (!steps.includes(h)) problems.push(`"## ${h}" isn't a step of this lesson's phase`);
+  }
+  if (problems.length === 0 && found.join() !== steps.join()) {
+    problems.push(`Lesson steps must be in order: ${steps.join(', ')}`);
   }
   return problems;
 }
+
+/** "R" for Grade R (0), else the number: [0, 1] → "R–1". */
+export const gradesText = (grades: readonly number[]): string =>
+  grades.map((g) => (g === 0 ? 'R' : String(g))).join('–');
 
 /** Drafts and lessons in review appear only when SHOW_DRAFTS is not "false" (production sets it to "false"). */
 export function isVisible(lesson: Pick<Lesson, 'status'>, showDrafts: boolean): boolean {

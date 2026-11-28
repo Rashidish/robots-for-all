@@ -1,0 +1,16 @@
+{
+  "id": "bus-round-corner",
+  "grid": {
+    "cols": 3,
+    "rows": 3
+  },
+  "start": {
+    "cell": "A3",
+    "heading": "N"
+  },
+  "target": "C1",
+  "obstacles": ["B2"],
+  "blocks": ["forward", "left", "right"],
+  "best": 5,
+  "theme": "bus-school"
+}

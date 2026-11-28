@@ -151,7 +151,7 @@ export function lessonContext(l: LessonJson): string {
     .map((p) => `- ${p.qty} × ${p.item}${p.substitute ? ` (or ${p.substitute})` : ''}`)
     .join('\n');
   return [
-    `Lesson: ${l.title} (grades ${l.grades.join(', ')})`,
+    `Lesson: ${l.title} (grades ${l.grades.map((g) => (g === 0 ? 'R' : String(g))).join(', ')})`,
     `Parts:\n${parts}`,
     `Safety: ${l.safety.adult_help ? 'an adult must help with this lesson.' : 'no adult help needed beyond normal supervision.'}\n${l.safety.notes.map((n) => `- ${n}`).join('\n')}`,
     `Lesson text:\n${l.body}`

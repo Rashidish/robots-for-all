@@ -76,7 +76,7 @@ const counts = (s: keyof typeof STATUS_LABELS) => lessons.filter((l) => l.status
                 {l.aiGenerated && ' · AI-drafted'}
               </small>
             </td>
-            <td>{l.grades.join(', ')}</td>
+            <td>{l.grades.map((g) => (g === 0 ? 'R' : g)).join(', ')}</td>
             <td>{STATUS_LABELS[l.status]}</td>
             <td>{l.reviewedBy ?? '—'}</td>
             <td>{l.buildTestedBy ?? '—'}</td>

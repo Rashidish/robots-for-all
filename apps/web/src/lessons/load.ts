@@ -8,7 +8,7 @@ import { languageProblems } from './languages';
 import { badgeProblems } from './badges';
 import { seasonProblems } from './seasons';
 import { worldIds, worldProblems } from './worlds';
-import { juniorProblems } from '../junior/missions';
+import { juniorMissions, juniorProblems } from '../junior/missions';
 
 export type LessonEntry = CollectionEntry<'lessons'>;
 
@@ -24,7 +24,8 @@ export async function getLessons(): Promise<LessonEntry[]> {
     if (lesson.data.id !== lesson.id) {
       problems.push(`${lesson.id}: front matter id "${lesson.data.id}" must match the folder name`);
     }
-    for (const p of checkPrimm(lesson.body ?? '')) problems.push(`${lesson.id}: ${p}`);
+    for (const p of checkPrimm(lesson.body ?? '', lesson.data.phase))
+      problems.push(`${lesson.id}: ${p}`);
     for (const p of checkLinks(lesson.data, ids)) problems.push(`${lesson.id}: ${p}`);
     for (const name of lesson.data.templates) {
       if (!findTemplate(lesson.id, name)) {
@@ -58,7 +59,12 @@ export async function getLessons(): Promise<LessonEntry[]> {
     ...juniorProblems()
   );
   const worlds = worldIds();
+  const missions = new Set(juniorMissions().map((j) => j.id));
   for (const lesson of all) {
+    for (const id of lesson.data.junior_missions) {
+      if (!missions.has(id))
+        problems.push(`${lesson.id}: mission "${id}" not found in content/junior/`);
+    }
     const world = lesson.data.world;
     if (world && !worlds.has(world)) {
       problems.push(`${lesson.id}: world "${world}" not found in content/worlds/`);
@@ -70,9 +76,15 @@ export async function getLessons(): Promise<LessonEntry[]> {
   if (problems.length > 0) {
     throw new Error(`Lesson problems:\n- ${problems.join('\n- ')}`);
   }
+  // Junior lessons follow their missions' order (content/junior/order.json), easiest first.
+  const order = juniorMissions().map((j) => j.id);
+  const rank = (l: LessonEntry) => {
+    const i = order.indexOf(l.data.junior_missions[0] ?? '');
+    return i < 0 ? order.length : i;
+  };
   const visible = all
     .filter((l) => isVisible(l.data, showDrafts) && !(isOff('lesson', l.id) && !showDrafts))
-    .sort((a, b) => a.data.phase - b.data.phase || a.id.localeCompare(b.id));
+    .sort((a, b) => a.data.phase - b.data.phase || rank(a) - rank(b) || a.id.localeCompare(b.id));
   // Badges (M5 FR-17): a published badge must be earnable from the lessons that are live.
   const facts = (list: LessonEntry[]) =>
     list.map((l) => ({ id: l.id, phase: l.data.phase, mechanism: l.data.mechanism }));

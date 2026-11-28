@@ -4,7 +4,8 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { localHref, m, pageLang } from '../../../i18n';
 import { getLessons, type LessonEntry } from '../../../lessons/load';
-import { PRIMM_STEPS } from '../../../lessons/schema';
+import { stepsFor } from '../../../lessons/schema';
+import { gradesLabel } from '../../../lessons/labels';
 import { localLesson } from '../../../lessons/translations';
 import { resolveImages, splitSections } from '../../../lessons/slides';
 
@@ -34,9 +35,9 @@ const html = local.entry.rendered?.html;
 if (!html) throw new Error(`${lesson.id}: no rendered HTML for the slides view`);
 const urlFor = (src: string) =>
   imageUrls[`../../../../../../content/lessons/${lesson.id}/${src.replace(/^\.\//, '')}`];
-// Sections are matched to PRIMM steps by position, so translated headings work too.
+// Sections are matched to the lesson's steps by position, so translated headings work too.
 const steps = splitSections(resolveImages(html, urlFor)).filter((_, i) =>
-  (PRIMM_STEPS as readonly string[]).includes(local.steps[i] ?? '')
+  stepsFor(data.phase).includes(local.steps[i] ?? '')
 );
 const total = 3 + steps.length + 1;
 ---
@@ -51,8 +52,7 @@ const total = 3 + steps.length + 1;
     <section class="slide title-slide" aria-label={m.slides_counter({ current: 1, total })}>
       <h1 lang={textLang}>{data.title}</h1>
       <p class="facts">
-        {m.lesson_grades({ grades: data.grades.join('–') })} ·{' '}
-        {m.lesson_duration({ minutes: data.duration_minutes })}
+        {gradesLabel(data.grades)} · {m.lesson_duration({ minutes: data.duration_minutes })}
       </p>
       <h2>{m.lesson_outcomes_title()}</h2>
       <ul lang={textLang}>

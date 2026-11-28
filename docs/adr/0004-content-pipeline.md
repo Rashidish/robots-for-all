@@ -34,7 +34,7 @@ content/projects/<id>/templates/     Printable SVG templates
 
 Rules:
 1. **Front matter holds metadata only** (id, title, phase, grades, mechanism, syllabus links, duration, cost, parts, templates, status, ai_generated, reviewed_by).
-2. **The PRIMM steps are the lesson body**, as five `##` headings (Predict, Run, Investigate, Modify, Make). Writers write prose, not YAML. The validator checks all five are present, in order.
+2. **The PRIMM steps are the lesson body**, as five `##` headings (Predict, Run, Investigate, Modify, Make). Writers write prose, not YAML. The validator checks all five are present, in order. (Amended 2026-11-28, Junior spec step 3: Junior lessons, phase 0 for Grades R–2, have four steps instead: Predict, Run, Try, Make.)
 3. **`languages` is worked out by the build** from the files present, rather than typed by hand, so it can never be wrong.
 4. **Only `status: published` lessons appear in production builds.** Drafts show on preview builds only.
 5. `published` requires `reviewed_by` to be set. AI-drafted content cannot go live unreviewed.

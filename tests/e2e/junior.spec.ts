@@ -31,7 +31,7 @@ test.describe('Junior (Grades R–2)', () => {
     expect(overflow).toBe(false);
     await page.reload();
     await expect(
-      page.getByRole('button', { name: '2. Rhino to the water (2 stars)' })
+      page.getByRole('button', { name: '4. Rhino to the water (2 stars)' })
     ).toBeVisible();
   });
 
@@ -50,12 +50,13 @@ test.describe('Junior (Grades R–2)', () => {
     await page.goto('/code/');
     await page.getByRole('link', { name: 'Junior' }).click();
     await expect(page).toHaveURL(/\/code\/junior\/$/);
-    await expect(page.getByRole('heading', { name: 'Bee to the flower' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Three steps to the flower' })).toBeVisible();
     await page.waitForFunction(() => navigator.serviceWorker.controller !== null);
     await page.reload();
-    await expect(page.getByRole('heading', { name: 'Bee to the flower' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Three steps to the flower' })).toBeVisible();
     await context.setOffline(true);
     await page.reload();
+    await tap(page, 'Forward');
     await tap(page, 'Forward');
     await tap(page, 'Forward');
     await page.getByRole('button', { name: 'Play' }).click();
@@ -76,7 +77,14 @@ test.describe('Junior printables and projector (step 2)', () => {
     await expect(page).toHaveURL(/\/code\/junior\/cards\/$/);
     await expect(page.getByRole('heading', { name: 'Arrow cards' })).toBeVisible();
     expect(await pdfPages(page)).toBe(2);
-    for (const id of ['bee-to-flower', 'rhino-to-water', 'bus-to-school']) {
+    for (const id of [
+      'bee-first-steps',
+      'bee-to-flower',
+      'bus-round-corner',
+      'rhino-to-water',
+      'rhino-count-steps',
+      'bus-to-school'
+    ]) {
       await page.goto(`/code/junior/sheet/${id}/`);
       await expect(page.getByRole('img').first()).toBeVisible();
       expect(await pdfPages(page), `${id} sheet pages`).toBe(1);
@@ -101,5 +109,42 @@ test.describe('Junior printables and projector (step 2)', () => {
       .toBeGreaterThan(before);
     await big.click();
     await expect(big).toHaveAttribute('aria-pressed', 'false');
+  });
+});
+
+test.describe('Junior lessons (step 3)', () => {
+  test('a Grade R lesson opens its mission and its picture sheet, with no PRIMM answer sheet', async ({
+    page
+  }) => {
+    await page.goto('/lessons/?grade=0');
+    await expect(page.getByRole('link', { name: 'Be the robot' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Rolling cardboard cart' })).toBeHidden();
+    await page.getByRole('link', { name: 'Be the robot' }).click();
+    await expect(page.getByRole('heading', { name: 'Be the robot', level: 1 })).toBeVisible();
+    const facts = page.locator('.facts');
+    await expect(facts).toContainText('Junior');
+    await expect(facts).toContainText('Grade R');
+    await expect(page.getByRole('heading', { name: 'Try', level: 2 })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Print the answer sheet' })).toHaveCount(0);
+    expect((await page.request.get('/lessons/j-robot-01/answer-sheet/')).status()).toBe(404);
+    await page.getByRole('link', { name: 'Print the “Three steps to the flower” sheet' }).click();
+    await expect(page).toHaveURL(/\/code\/junior\/sheet\/bee-first-steps\/$/);
+    await page.goBack();
+    await page.getByRole('link', { name: 'Open “Three steps to the flower”' }).click();
+    await expect(page.getByRole('heading', { name: 'Three steps to the flower' })).toBeVisible();
+    for (let i = 0; i < 3; i++) await tap(page, 'Forward');
+    await page.getByRole('button', { name: 'Play' }).click();
+    await expect(page.getByText('Well done! The best way!')).toBeVisible({ timeout: 10_000 });
+  });
+
+  test('a Junior lesson opens a later mission from its link', async ({ page }) => {
+    await page.goto('/lessons/j-count-01/');
+    await expect(page.locator('.facts')).toContainText('Grade 2');
+    await page.getByRole('link', { name: 'Open “Count to the water”' }).click();
+    await expect(page.getByRole('heading', { name: 'Count to the water' })).toBeVisible();
+    await tap(page, 'Five times');
+    await tap(page, 'Forward');
+    await page.getByRole('button', { name: 'Play' }).click();
+    await expect(page.getByText('Well done! The best way!')).toBeVisible({ timeout: 10_000 });
   });
 });

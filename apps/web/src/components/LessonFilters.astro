@@ -2,6 +2,7 @@
 // Filters for the lessons list (FR-9). Hidden without JavaScript, when every lesson simply shows.
 import { localHref, m } from '../i18n';
 import type { LessonEntry } from '../lessons/load';
+import { gradesText } from '../lessons/schema';
 
 interface Props {
   lessons: LessonEntry[];
@@ -18,7 +19,7 @@ const mechanisms = [...new Set(lessons.map((l) => l.data.mechanism))].sort();
     <select name="grade">
       <option value="">{m.lessons_filter_any()}</option>
       {grades.map((g) => (
-        <option value={g}>{g}</option>
+        <option value={g}>{gradesText([g])}</option>
       ))}
     </select>
   </label>

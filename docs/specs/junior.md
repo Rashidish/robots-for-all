@@ -1,6 +1,6 @@
 # Spec: Junior — coding before reading (Grades R–2)
 
-> **Version:** 0.3 · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-27); editor decided (ADR-0019)
+> **Version:** 0.4 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-27); editor decided (ADR-0019)
 > Depends on: M3 editor (ADR-0005), M4 robot world and robot calls (ADR-0007, ADR-0008), M5 sign-in, records and badges (ADR-0013, ADR-0014, `content/badges`). If approved, CLAUDE.md §1 "Who it's for" changes from Grade 3 to Grade R upward. Brainstorm: build-plan board, "Grades R–2: coding before reading".
 
 ## 1. Purpose
@@ -87,7 +87,7 @@ Building our own Junior mode reuses Blockly and the M4 robot world, so it adds v
 
 - **Blocks:** a second, small Blockly block set in `packages/blocks` (horizontal layout, icon fields). It generates the same robot calls as the Grade 3+ blocks, so there is one runtime.
 - **Grid mode** in `packages/sim`: positions snap to squares, turns are 90°, and a block per step drives the animation.
-- **Lessons:** front matter gains `junior: true` and `world: <id>`; grades accept `R` (as 0), 1 and 2.
+- **Lessons** (built in step 3): a Junior lesson is `phase: 0` (shown as "Junior") with an id like `j-robot-01`, grades `0` (shown as "R"), 1 and 2, and `junior_missions: [<mission id>, …]` naming the missions it opens in `content/junior`. Its body has four `##` steps in order, **Predict, Run, Try, Make**, optionally followed by Teacher notes. Instead of the PRIMM answer sheet (with a sheet code), the lesson page links to each mission and its picture mission sheet, and to the arrow cards. The build fails on a Junior lesson with a mission that doesn't exist, the wrong steps, a grade above 2, or Grade R on any other phase. Junior lessons list first, in the order of their first mission.
 - An ADR is needed only if Blockly's horizontal layout turns out not to work on phones; the fallback is a tiny custom row editor of about 300 lines.
 
 ## 7. Security, privacy and child safety
@@ -125,7 +125,23 @@ After M6, unless the owner moves it earlier.
    - Tests: e2e checks the page counts (2 and 1), the projector size and accessibility. Printing on real paper goes in the test plan (B60).
 
    **Projector layout, arrow cards, picture answer sheet.**
-3. Six Grade R–2 lessons (two per grade), CAPS Foundation Phase links to confirm. ⏸ owner review.
+3. *(built 2026-11-28, drafts)*
+   - The lesson format above, with the six lessons as drafts (`ai_generated: true`, CAPS Foundation Phase links marked "to confirm"), about 30 minutes each, each starting unplugged with children as the robot on a taped floor grid:
+
+     | Grade | Lesson | Mission (fewest blocks) | Big idea |
+     |---|---|---|---|
+     | R | `j-robot-01` Be the robot | Three steps to the flower (3) | A robot does one step per instruction |
+     | R | `j-bee-01` Bee to the flower | Bee to the flower (2) | Plan, then test |
+     | 1 | `j-turn-01` Turn and go | Round the corner (5) | Quarter turns on the spot |
+     | 1 | `j-rhino-01` Rhino to the water | Rhino to the water (5) | Find and fix the bug |
+     | 2 | `j-count-01` Count the steps | Count to the water (2) | Repeat (×N) |
+     | 2 | `j-bus-01` Bus to school | Bus to school (8) | Turns and repeats together |
+
+   - Three new missions, so each lesson has its own; Junior now has six, in the order above. The last lesson leads to `p1-wheel-01` (Grade 3).
+   - English only for the lesson text; the new interface words are in English and draft isiZulu.
+   - People checks: the usual A1–A6 per lesson in the test plan, with A2 as a "teach test" with children, plus B61.
+
+   **Six Grade R–2 lessons.** ⏸ owner review.
 
 ## 10. AI · 11. Revenue · 12. Risks · 13. Owner actions
 
@@ -143,3 +159,4 @@ After M6, unless the owner moves it earlier.
 | 0.1 | 2026-11-27 | First draft from the build-plan board brainstorm |
 | 0.2 | 2026-11-27 | Approved: tab named Junior, own sign-in with the QR card, grid first, stories later (reminder), after M6 |
 | 0.3 | 2026-11-27 | Owner decisions: tap-to-add row with Blockly as fallback (ADR-0019), own page linked as a tab, ×N repeats the next block; step 1 built |
+| 0.4 | 2026-11-28 | Step 2 built; step 3 built: Junior lesson format (phase 0, Grade R as 0, `junior_missions`, Predict–Run–Try–Make), three more missions, six draft lessons |

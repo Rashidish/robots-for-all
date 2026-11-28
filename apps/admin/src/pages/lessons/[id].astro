@@ -136,8 +136,9 @@ const STATUS_LABELS = { draft: 'Draft', in_review: 'In review', published: 'Publ
   {lesson && (
     <>
       <p>
-        <strong>{STATUS_LABELS[lesson.status]}</strong> · Phase {lesson.phase} · Grades{' '}
-        {lesson.grades.join(', ')}
+        <strong>{STATUS_LABELS[lesson.status]}</strong> ·{' '}
+        {lesson.phase === 0 ? 'Junior' : `Phase ${lesson.phase}`} · Grades{' '}
+        {lesson.grades.map((g) => (g === 0 ? 'R' : g)).join(', ')}
         {lesson.aiGenerated && ' · AI-drafted'}
       </p>
       <p>

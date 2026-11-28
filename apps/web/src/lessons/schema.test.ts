@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { checkLinks, checkPrimm, isVisible, lessonSchema } from './schema';
+import { checkLinks, checkPrimm, gradesText, isVisible, lessonSchema } from './schema';
 
 const valid = {
   id: 'p1-crank-01',
@@ -107,6 +107,46 @@ describe('PRIMM structure', () => {
   it('reports steps out of order', () => {
     const swapped = '## Run\n## Predict\n## Investigate\n## Modify\n## Make\n';
     expect(checkPrimm(swapped)).toHaveLength(1);
+  });
+});
+
+describe('Junior lessons (Grades R–2, spec junior.md §9 step 3)', () => {
+  const junior = {
+    ...valid,
+    id: 'j-robot-01',
+    phase: 0,
+    grades: [0],
+    mechanism: 'directions',
+    templates: [],
+    junior_missions: ['bee-first-steps']
+  };
+
+  it('accepts phase 0 with Grade R and a mission', () => {
+    expect(lessonSchema.safeParse(junior).success).toBe(true);
+    expect(gradesText([0, 1])).toBe('R–1');
+    expect(gradesText([3, 4])).toBe('3–4');
+  });
+
+  it.each([
+    ['a Junior id on another phase', { ...valid, id: 'j-robot-01' }],
+    ['a Junior lesson with a p1 id', { ...junior, id: 'p1-robot-01' }],
+    ['Grade R outside Junior', { ...valid, grades: [0, 3] }],
+    ['a Junior lesson for Grade 3', { ...junior, grades: [2, 3] }],
+    ['a Junior lesson with no mission', { ...junior, junior_missions: [] }],
+    ['missions on a Phase 1 lesson', { ...valid, junior_missions: ['bee-first-steps'] }]
+  ])('rejects %s', (_name, lesson) => {
+    expect(lessonSchema.safeParse(lesson).success).toBe(false);
+  });
+
+  it('has four steps: Predict, Run, Try, Make', () => {
+    const body = '## Predict\nx\n## Run\nx\n## Try\nx\n## Make\nx\n## Teacher notes\nx\n';
+    expect(checkPrimm(body, 0)).toEqual([]);
+    expect(checkPrimm(primmBody, 0)).toEqual([
+      'Missing "## Try" heading',
+      '"## Investigate" isn\'t a step of this lesson\'s phase',
+      '"## Modify" isn\'t a step of this lesson\'s phase'
+    ]);
+    expect(checkPrimm(body)).toContain('"## Try" isn\'t a step of this lesson\'s phase');
   });
 });
 

@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.41 (draft) · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail
+> **Version:** 0.42 (draft) · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -15,7 +15,7 @@ Tagline: *"From Cardboard to Innovation: Robotics Education for Everyone."*
 Learners start with cardboard, popsicle sticks, straws and one motor. They move on to controlling robots with micro:bit/ESP boards, then to designing integrated robot projects. Teachers, robotics coaches and parents get ready-made lessons, templates, parts lists and AI help.
 
 **Who it's for**
-- Learners from **Grade R** upward (children and adult beginners); Grades R–2 use the picture-block **Junior** tab (spec `docs/specs/junior.md`), lessons with written blocks start at Grade 3
+- Learners from **Grade R** upward (children and adult beginners); Grades R–2 have Junior lessons (phase 0) and the picture-block **Junior** tab (spec `docs/specs/junior.md`); lessons with written blocks start at Grade 3
 - Teachers, robotics club coaches, STEM trainers
 - Parents and guardians, homeschool families
 - Schools, libraries, community centres, youth programmes
@@ -136,6 +136,7 @@ Before adding any dependency, check: bundle size, licence, works offline, works 
 /content/lessons     Lessons as Markdown + front matter (one folder per lesson)
 /content/projects    Project data, parts lists, templates (SVG)
 /content/worlds      Robot worlds and courses for the simulator (JSON, checked)
+/content/junior      Junior missions for Grades R–2 (JSON, checked: solvable in their fewest blocks) and order.json
 /content/seasons     Seasons: three courses per theme, one per grade band, plus badge (JSON + SVG)
 /content/badges      Badges: rule (JSON) + picture without words (SVG); words in content/i18n as badge_<id>_name/_about
 /content/sheets      Every answer sheet code ever printed (`npm run sheet-codes` after a build; only grows)
@@ -153,8 +154,8 @@ Front matter is metadata only:
 ```yaml
 id: p1-crank-01
 title: Crank-powered waving rhino
-phase: 1                 # 1 Build | 2 Control | 3 Integrate
-grades: [3, 4]
+phase: 1                 # 0 Junior (Grades R–2, ids j-…) | 1 Build | 2 Control | 3 Integrate
+grades: [3, 4]           # Grade R is 0 (Junior only)
 mechanism: crank         # crank | gear | lever | linkage | ...
 syllabus_links:          # CAPS topic references
   - subject: Coding and Robotics (CAPS, Intermediate Phase)
@@ -176,6 +177,7 @@ templates: [rhino-parts]   # sheets in content/projects/<id>/templates/<name>.ts
 starter_program: null    # Phase 2+: programs/<name>.rfa.json in the lesson folder
 world: null              # Phase 2+: robot world it opens in: content/worlds/<id>.json
 hardware: none           # none | microbit | microbit-motor
+junior_missions: []      # Junior only, at least one: missions in content/junior
 status: draft            # draft | in_review | published
 ai_generated: true
 reviewed_by: null        # required to publish
@@ -183,7 +185,7 @@ build_tested_by: null    # required to publish: who built it from the printed le
 ```
 A translation, `index.<lang>.md`, holds only the translated words (`title`, `outcomes`, `concepts`, `parts` item/substitute, `safety_notes`, `assessment`, `templates` (each sheet's title and part names/notes), `program_name` (the starter program's name), the body with the same `##` sections) plus `status`, `ai_generated`, `reviewed_by` and `translated_from` (`npm run translation-hash -- <id>`, covering `index.md` and the lesson's template files); facts come from `index.md` (spec `docs/specs/back-office-more-content.md` §2.7).
 
-The body holds the five PRIMM steps as `##` headings in order: Predict, Run, Investigate, Modify, Make, optionally followed by `## Teacher notes`. Links to other lessons must point to lessons that exist (build fails otherwise).
+The body holds the five PRIMM steps as `##` headings in order: Predict, Run, Investigate, Modify, Make, optionally followed by `## Teacher notes`. Junior lessons have four: Predict, Run, Try, Make; they use the picture mission sheets instead of an answer sheet. Links to other lessons must point to lessons that exist (build fails otherwise).
 Languages are worked out from the files present, never typed by hand.
 Teachers and content editors must be able to add a lesson without touching code.
 
@@ -321,3 +323,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.39 | 2026-11-27 | Junior approved: learners from Grade R (Junior tab, after M6); reminder to revisit stories |
 | 0.40 | 2026-11-27 | Live help sessions spec approved (`docs/specs/live-sessions.md`), coach on laptop or tablet |
 | 0.41 | 2026-11-27 | `content/junior` (Junior missions; ADR-0019: tap-to-add row on `/code/junior/`) |
+| 0.42 | 2026-11-28 | Junior lessons: phase 0, Grade R as 0, `junior_missions`, Predict–Run–Try–Make (Junior spec step 3) |

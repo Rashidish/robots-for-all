@@ -14,7 +14,7 @@ describe('Content → Lessons: reading front matter', () => {
       const s = summarise(id, read(id));
       expect(s.id).toBe(id);
       expect(s.title.length, id).toBeGreaterThan(3);
-      expect([1, 2, 3], id).toContain(s.phase);
+      expect([0, 1, 2, 3], id).toContain(s.phase);
       expect(s.grades.length, id).toBeGreaterThan(0);
       expect(['draft', 'in_review', 'published'], id).toContain(s.status);
     }

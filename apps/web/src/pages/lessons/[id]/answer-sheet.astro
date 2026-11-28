@@ -12,7 +12,10 @@ import { answerSheet, sheetCode, sheetIsDense } from '../../../lessons/answers';
 
 export async function getStaticPaths() {
   const lessons = await getLessons();
-  return lessons.map((lesson) => ({ params: { id: lesson.id }, props: { lesson, lessons } }));
+  // Junior lessons (phase 0) use the picture mission sheets instead (spec junior.md FR-6).
+  return lessons
+    .filter((lesson) => lesson.data.phase !== 0)
+    .map((lesson) => ({ params: { id: lesson.id }, props: { lesson, lessons } }));
 }
 
 interface Props {

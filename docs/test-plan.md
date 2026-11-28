@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.60 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail
+> **Version:** 0.61 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -47,6 +47,12 @@ How to use this list: add a row whenever a step adds something only a person can
 | p2-maze-01 Bump maze (as above; also: one printed stencil makes walls that stand by themselves when traced on cereal-box card; the tunnel roof halves join to 150 × 200 mm; the gate flap swings when the robot pushes it; the starter gets the real robot out of a six-wall maze) | | | | | n/a | |
 | p2-art-01 Pen art (as above; also: an adult checks the servo wiring, with the servo pack + never joined to the micro:bit; the servo lifts the pen clear of the paper and lets it drop back; the real robot draws a square that closes to within 2 cm after tuning the turn pause; a cardboard SG90 stand holds the servo steady) | | | | | n/a | |
 | p3-linemaze-01 Line maze (as above; also: the printed line maze tiles join and the taped lines match the screen; the real robot takes the left branch at a taped T junction and turns round at a dead end; two teams build, swap and race their own mazes) | | | | | n/a | |
+| j-robot-01 Be the robot (Junior, Grade R: **A2 = a teach test** with a Grade R class, using only the printed lesson, arrow cards and mission sheet; A4 includes the Foundation Phase Maths and Life Skills links; no template, so A5 n/a) | | | | | n/a | |
+| j-bee-01 Bee to the flower (as above, Grade R) | | | | | n/a | |
+| j-turn-01 Turn and go (as above, Grade 1) | | | | | n/a | |
+| j-rhino-01 Rhino to the water (as above, Grade 1) | | | | | n/a | |
+| j-count-01 Count the steps (as above, Grade 2) | | | | | n/a | |
+| j-bus-01 Bus to school (as above, Grade 2) | | | | | n/a | |
 
 ---
 
@@ -107,7 +113,8 @@ How to use this list: add a row whenever a step adds something only a person can
 | B53 | **Check a certificate**: someone outside the school opens /verify/ on a phone, types a real code from a badge (any case, with or without dashes) and sees the badge, date and school; a withdrawn badge's code says withdrawn; no name or nickname appears anywhere | |
 | B54 | **Certificates printed**: a parent downloads their child's certificate on a phone and prints it on a home or school printer (A4, colours, the name with any accents spelled right, the QR code scans to /verify/); a teacher downloads a class's badge cards (four per A4, cut on the dashed lines); a child without the name consent gets a blank line; the PDF is about 11 KB | |
 | B55 | **Family group**: a homeschooling parent starts a family group on a phone, adds two children, a child signs in on the family phone with the code and pictures, the parent taps "Learn as" on their own phone, the other parent opens the link, is confirmed by name and sees the children; a ninth child is refused; a certificate says "Awarded by Robots For All" | |
-| B60 | **Junior printing**: print the arrow cards and the three mission sheets on a school printer (colour and black and white). Do the cards cut cleanly at 6.2 cm, and can a Grade R child tell the arrows apart in black and white? Do the boards fit one page? | |
+| B61 | **Junior lessons in a classroom**: a Foundation Phase teacher reads the six lessons for wording (read aloud to Grade R), timing (about 30 minutes, 2–5 minutes per activity) and the unplugged floor grid; is "Try" the right word for the fourth step, and do the Junior lessons sit well first in the lessons list? | |
+| B60 | **Junior printing**: print the arrow cards and the six mission sheets on a school printer (colour and black and white). Do the cards cut cleanly at 6.2 cm, and can a Grade R child tell the arrows apart in black and white? Do the boards fit one page? | |
 | B59 | **Junior with children** (Grades R–2, cheap phones and a projector): can they add and take out blocks without help, read the pictures without words, and solve the three missions? If tapping doesn't work for them, ADR-0019's fallback (Blockly sideways) is built | |
 | B58 | **AI helper safety, live** (owner, before switching the helper on and after any prompt or model change): `npm run helper-safety -- <model>` for each allowed model; every question passes; a reviewer reads the isiZulu answers | Part done: `claude-haiku-5-5` 59/59, owner, 2026-11-27 (prompts adult-v1, child-v1). Still to do: a reviewer reads the isiZulu answers |
 | B57 | **Name key rotation rehearsal** (owner, before launch): on a test project with a few enrolled learners, make key 2, make it current, let the daily job run, check Privacy → Name key shows 0 on key 1, remove key 1 and print a certificate and tap Show names: the names are still right | |
@@ -193,3 +200,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.58 | 2026-11-27 | C1: robotsforall.org.za live, redirects outstanding; C2: approach Vodacom once the platform is complete |
 | 0.59 | 2026-11-27 | B59 Junior with children |
 | 0.60 | 2026-11-28 | B60 Junior printing |
+| 0.61 | 2026-11-28 | Six Junior lessons waiting for A1–A6; B61 Junior lessons in a classroom; B60 covers six mission sheets |

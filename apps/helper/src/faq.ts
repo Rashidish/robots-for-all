@@ -66,7 +66,7 @@ export async function draftFaq(input: DraftInput) {
     turns: [
       {
         role: 'user',
-        text: `Write the common questions in ${LANGUAGE_NAMES[input.language] ?? 'English'}, for Grade ${input.youngestGrade} and up.`
+        text: `Write the common questions in ${LANGUAGE_NAMES[input.language] ?? 'English'}, for Grade ${input.youngestGrade === 0 ? 'R' : input.youngestGrade} and up.`
       }
     ],
     maxTokens: 3000

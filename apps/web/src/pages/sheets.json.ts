@@ -12,7 +12,8 @@ import { siteLanguages } from '../site-languages';
 export const GET: APIRoute = async () => {
   const lessons = await getLessons();
   const current: Record<string, SheetSummary> = {};
-  for (const lesson of lessons) {
+  // Junior lessons have picture mission sheets, with no sheet code (spec junior.md FR-6).
+  for (const lesson of lessons.filter((l) => l.data.phase !== 0)) {
     for (const { code: lang } of siteLanguages) {
       const local = await localLesson(lesson, lang, lessons);
       if (local.lang !== lang) continue; // shown in English: the English sheet covers it
